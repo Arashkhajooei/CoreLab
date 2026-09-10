@@ -5,10 +5,54 @@
    their own. Durations/easings come from the design tokens. */
 
 @media (prefers-reduced-motion: reduce) {
-  svg[data-icon] {
+  svg[data-icon],
+  .cl-mark * {
     animation: none !important;
     transition: none !important;
   }
+}
+
+/* ---- CoreLab brand mark ---- */
+@media (prefers-reduced-motion: no-preference) {
+  /* Strata bands breathe at staggered offsets, so the core looks alive. */
+  .cl-mark-band {
+    animation: cl-band 3.6s var(--ease-standard) infinite;
+  }
+  .cl-mark-band-1 { opacity: 0.95; animation-delay: 0s; }
+  .cl-mark-band-2 { opacity: 0.55; animation-delay: 0.5s; }
+  .cl-mark-band-3 { opacity: 0.8; animation-delay: 1s; }
+
+  /* Measure line sweeps down the core, like a test in progress. */
+  .cl-mark-scan {
+    animation: cl-scan 3.6s var(--ease-standard) infinite;
+  }
+
+  .cl-mark:hover .cl-mark-band,
+  .cl-mark:hover .cl-mark-scan {
+    animation-duration: 1.2s;
+  }
+  .cl-mark svg {
+    transition: transform var(--duration-base) var(--ease-standard);
+  }
+  .cl-mark:hover svg {
+    transform: translateY(-1px) scale(1.06);
+  }
+}
+
+/* Static fallback so the bands are still visible without motion. */
+.cl-mark-band-1 { opacity: 0.95; }
+.cl-mark-band-2 { opacity: 0.55; }
+.cl-mark-band-3 { opacity: 0.8; }
+
+@keyframes cl-band {
+  0%, 100% { opacity: 0.35; }
+  45% { opacity: 1; }
+}
+@keyframes cl-scan {
+  0% { transform: translateY(0); opacity: 0; }
+  12% { opacity: 0.9; }
+  85% { opacity: 0.9; }
+  100% { transform: translateY(16px); opacity: 0; }
 }
 
 @media (prefers-reduced-motion: no-preference) {

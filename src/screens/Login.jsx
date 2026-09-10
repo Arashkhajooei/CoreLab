@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { CoreLabMark } from '../app/CoreLabMark.jsx'
 import { Button } from '../ds/core/Button.jsx'
 import { Icon } from '../ds/core/Icon.jsx'
 import { Field } from '../ds/forms/Field.jsx'
@@ -31,9 +32,7 @@ export function Login() {
     <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-bg)', color: 'var(--color-text)', padding: 24 }}>
       <div style={{ width: '100%', maxWidth: 380 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 22 }}>
-          <div className="cl-login-mark" style={{ width: 32, height: 32, flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-accent)', color: 'var(--color-on-accent)' }}>
-            <Icon name="flask-conical" size={18} />
-          </div>
+          <CoreLabMark size={30} showWordmark={false} />
           <div>
             <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 'var(--text-lg)', letterSpacing: '-0.015em', lineHeight: 1.1 }}>CoreLab</div>
             <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--color-text-3)' }}>Northline Geotechnical</div>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { supabase } from './lib/supabase'
+import { CoreLabMark } from './app/CoreLabMark.jsx'
 import { Avatar } from './ds/core/Avatar.jsx'
 import { IconButton } from './ds/core/IconButton.jsx'
 import { Sidebar } from './ds/navigation/Sidebar.jsx'
@@ -82,7 +83,7 @@ export function App() {
 
   return (
     <div style={{ display: 'flex', height: '100vh', minHeight: 0, background: 'var(--color-bg)', color: 'var(--color-text)' }}>
-      <Sidebar org="Northline Geotechnical" sections={sections} active={route} onSelect={setRoute}
+      <Sidebar brand={<CoreLabMark />} org="Northline Geotechnical" sections={sections} active={route} onSelect={setRoute}
         footer={<div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Avatar name={name} size="sm" tone="accent" />
           <div style={{ minWidth: 0, flex: 1 }}><div style={{ fontSize: 'var(--text-xs)', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</div><div style={{ fontSize: 'var(--text-2xs)', color: 'var(--color-text-3)' }}>{role}</div></div>
