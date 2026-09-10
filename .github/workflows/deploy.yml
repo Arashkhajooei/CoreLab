@@ -22,11 +22,16 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+      # Enables GitHub Pages on first run using the workflow's own token.
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
       - run: bun install --frozen-lockfile
       - name: Build
+        # The publishable key is safe to expose (protected by RLS). Repo secrets
+        # of the same name override these defaults if set.
         env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://ibylxunqtpbuobvjwxoz.supabase.co' }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_X_eoA7uToTLjHIiNobB2yg_sCbkXD-y' }}
         run: bun run build
       - uses: actions/upload-pages-artifact@v3
         with:
