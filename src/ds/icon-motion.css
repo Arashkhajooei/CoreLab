@@ -1,0 +1,247 @@
+/* Icon motion.
+   ds/core/Icon.jsx stamps data-icon="<name>" on every <svg>, which lets each icon
+   carry its own gesture. Motion is hover-driven on interactive ancestors so a dense
+   operations UI stays calm at rest; only the login mark and danger alerts move on
+   their own. Durations/easings come from the design tokens. */
+
+@media (prefers-reduced-motion: reduce) {
+  svg[data-icon] {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  svg[data-icon] {
+    transition: transform var(--duration-fast) var(--ease-standard);
+  }
+
+  /* Baseline: every icon inside anything clickable gets a small lift, so nothing
+     feels dead even without a bespoke gesture below. */
+  :where(button, a, [role='button'], tr):hover > svg[data-icon],
+  :where(button, a, [role='button'], tr):hover svg[data-icon] {
+    transform: scale(1.12);
+  }
+
+  /* ---- per-icon gestures on hover of the containing control ---- */
+  :where(button, a, [role='button'], tr):hover svg[data-icon='flask-conical'] {
+    animation: ic-sway var(--duration-slow) var(--ease-standard);
+  }
+  :where(button, a, [role='button'], tr):hover svg[data-icon='bell'] {
+    animation: ic-ring 600ms var(--ease-standard);
+  }
+  :where(button, a, [role='button'], tr):hover svg[data-icon='wrench'] {
+    animation: ic-turn 500ms var(--ease-standard);
+  }
+  :where(button, a, [role='button'], tr):hover svg[data-icon='download'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='chevron-down'] {
+    animation: ic-nudge-down var(--duration-base) var(--ease-standard);
+  }
+  :where(button, a, [role='button'], tr):hover svg[data-icon='upload'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='chevron-up'] {
+    animation: ic-nudge-up var(--duration-base) var(--ease-standard);
+  }
+  :where(button, a, [role='button'], tr):hover svg[data-icon='send'] {
+    animation: ic-fly 420ms var(--ease-standard);
+  }
+  :where(button, a, [role='button'], tr):hover svg[data-icon='arrow-right'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='chevron-right'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='skip-forward'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='log-out'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='log-in'] {
+    animation: ic-nudge-right var(--duration-base) var(--ease-standard);
+  }
+  :where(button, a, [role='button'], tr):hover svg[data-icon='chevron-left'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='undo-2'] {
+    animation: ic-nudge-left var(--duration-base) var(--ease-standard);
+  }
+  :where(button, a, [role='button'], tr):hover svg[data-icon='plus'] {
+    animation: ic-quarter-turn var(--duration-base) var(--ease-standard);
+  }
+  :where(button, a, [role='button'], tr):hover svg[data-icon='check'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='check-check'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='check-circle-2'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='badge-check'] {
+    animation: ic-pop var(--duration-base) var(--ease-standard);
+  }
+  :where(button, a, [role='button'], tr):hover svg[data-icon='trending-up'] {
+    animation: ic-rise var(--duration-base) var(--ease-standard);
+  }
+  :where(button, a, [role='button'], tr):hover svg[data-icon='trending-down'] {
+    animation: ic-fall var(--duration-base) var(--ease-standard);
+  }
+  :where(button, a, [role='button'], tr):hover svg[data-icon='search'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='filter'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='settings-2'] {
+    animation: ic-wiggle 420ms var(--ease-standard);
+  }
+  :where(button, a, [role='button'], tr):hover svg[data-icon='droplets'] {
+    animation: ic-drip 600ms var(--ease-standard);
+  }
+  :where(button, a, [role='button'], tr):hover svg[data-icon='layers'] {
+    animation: ic-shift var(--duration-slow) var(--ease-standard);
+  }
+  :where(button, a, [role='button'], tr):hover svg[data-icon='calendar-days'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='calendar-clock'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='calendar-plus'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='calendar'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='clock'] {
+    animation: ic-hop var(--duration-base) var(--ease-standard);
+  }
+  :where(button, a, [role='button'], tr):hover svg[data-icon='printer'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='receipt'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='file-text'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='file-check-2'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='clipboard-check'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='clipboard-list'] {
+    animation: ic-tilt var(--duration-slow) var(--ease-standard);
+  }
+  :where(button, a, [role='button'], tr):hover svg[data-icon='scan-barcode'] {
+    animation: ic-scan 700ms var(--ease-standard);
+  }
+  :where(button, a, [role='button'], tr):hover svg[data-icon='camera'] {
+    animation: ic-pop var(--duration-fast) var(--ease-standard);
+  }
+  :where(button, a, [role='button'], tr):hover svg[data-icon='sun'] {
+    animation: ic-spin 700ms var(--ease-standard);
+  }
+  :where(button, a, [role='button'], tr):hover svg[data-icon='moon'] {
+    animation: ic-rock 600ms var(--ease-standard);
+  }
+  :where(button, a, [role='button'], tr):hover svg[data-icon='more-horizontal'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='ellipsis'] {
+    animation: ic-wiggle var(--duration-slow) var(--ease-standard);
+  }
+  :where(button, a, [role='button'], tr):hover svg[data-icon='folder-kanban'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='kanban'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='layout-dashboard'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='layout-grid'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='list'] {
+    animation: ic-shift var(--duration-base) var(--ease-standard);
+  }
+  :where(button, a, [role='button'], tr):hover svg[data-icon='test-tubes'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='ruler'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='save'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='mail'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='message-square'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='map-pin'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='users'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='user-plus'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='user-round-x'],
+  :where(button, a, [role='button'], tr):hover svg[data-icon='maximize-2'] {
+    animation: ic-sway var(--duration-base) var(--ease-standard);
+  }
+
+  /* Selecting a nav section pops its icon once (the selector starts matching). */
+  [aria-current='page'] svg[data-icon] {
+    animation: ic-pop var(--duration-slow) var(--ease-standard);
+  }
+
+  /* Ambient, and only where it carries meaning. */
+  svg[data-icon='alert-triangle'],
+  svg[data-icon='alert-circle'] {
+    animation: ic-pulse 2.4s var(--ease-standard) infinite;
+  }
+  .cl-login-mark svg[data-icon='flask-conical'] {
+    animation: ic-sway 4s var(--ease-standard) infinite;
+  }
+}
+
+@keyframes ic-sway {
+  0%, 100% { transform: rotate(0); }
+  30% { transform: rotate(-9deg); }
+  65% { transform: rotate(7deg); }
+}
+@keyframes ic-ring {
+  0%, 100% { transform: rotate(0); }
+  15% { transform: rotate(-14deg); }
+  35% { transform: rotate(11deg); }
+  55% { transform: rotate(-7deg); }
+  75% { transform: rotate(4deg); }
+}
+@keyframes ic-turn {
+  0%, 100% { transform: rotate(0); }
+  40% { transform: rotate(-22deg); }
+  75% { transform: rotate(14deg); }
+}
+@keyframes ic-nudge-down {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(3px); }
+}
+@keyframes ic-nudge-up {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+@keyframes ic-nudge-right {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(3px); }
+}
+@keyframes ic-nudge-left {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-3px); }
+}
+@keyframes ic-fly {
+  0% { transform: translate(0, 0); opacity: 1; }
+  55% { transform: translate(6px, -6px); opacity: 0; }
+  56% { transform: translate(-4px, 4px); opacity: 0; }
+  100% { transform: translate(0, 0); opacity: 1; }
+}
+@keyframes ic-quarter-turn {
+  0% { transform: rotate(0); }
+  100% { transform: rotate(90deg); }
+}
+@keyframes ic-pop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.28); }
+  100% { transform: scale(1); }
+}
+@keyframes ic-rise {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(2px, -3px); }
+}
+@keyframes ic-fall {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(2px, 3px); }
+}
+@keyframes ic-wiggle {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-11deg); }
+  60% { transform: rotate(9deg); }
+}
+@keyframes ic-drip {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  35% { transform: translateY(-1px) scaleY(0.9); }
+  70% { transform: translateY(3px) scaleY(1.12); }
+}
+@keyframes ic-shift {
+  0%, 100% { transform: translateY(0); }
+  35% { transform: translateY(-2px); }
+  70% { transform: translateY(1px); }
+}
+@keyframes ic-hop {
+  0%, 100% { transform: translateY(0) scale(1); }
+  40% { transform: translateY(-3px) scale(1.06); }
+}
+@keyframes ic-tilt {
+  0%, 100% { transform: rotate(0) translateY(0); }
+  40% { transform: rotate(-7deg) translateY(-2px); }
+  75% { transform: rotate(4deg) translateY(0); }
+}
+@keyframes ic-scan {
+  0%, 100% { transform: scaleX(1); opacity: 1; }
+  40% { transform: scaleX(0.78); opacity: 0.65; }
+  70% { transform: scaleX(1.08); opacity: 1; }
+}
+@keyframes ic-spin {
+  0% { transform: rotate(0); }
+  100% { transform: rotate(180deg); }
+}
+@keyframes ic-rock {
+  0%, 100% { transform: rotate(0); }
+  30% { transform: rotate(-18deg); }
+  65% { transform: rotate(12deg); }
+}
+@keyframes ic-pulse {
+  0%, 70%, 100% { transform: scale(1); opacity: 1; }
+  35% { transform: scale(1.16); opacity: 0.82; }
+}

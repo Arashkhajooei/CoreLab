@@ -27,12 +27,24 @@ from the design's in-browser Babel setup to a Vite build.
 
 `src/ds/` is the design project's component library, copied verbatim — 23 components
 (core, forms, data, navigation, feedback) plus the token CSS. Nothing in `src/ds/`
-should be hand-edited; re-sync it from the design project instead.
+should be hand-edited; re-sync it from the design project instead. Two deliberate
+local additions live alongside it: `lucide-global.ts` (icon registry) and
+`icon-motion.css`. The only edit to a copied file is one line in `core/Icon.jsx`,
+which stamps `data-icon={name}` on the `<svg>` so motion can target each icon —
+re-apply it if you re-sync that file.
 
 - Tokens: `src/ds/tokens/{colors,typography,spacing,effects,base}.css`
 - Type: Archivo (heading/body) + JetBrains Mono (numerals, IDs, measurements)
 - Dark theme by default; `data-theme="light"` on `<html>` switches it, and the report
   proof nests a light-themed subtree inside the dark UI.
+
+**Icon motion.** `src/ds/icon-motion.css` gives each icon its own gesture — the flask
+sways, the wrench turns, the bell rings, `plus` quarter-turns, chevrons nudge — played
+on hover of the containing control, so a dense table stays calm at rest. Selecting a
+nav section pops its icon once; only danger alerts and the login mark move on their
+own. It all keys off `data-icon="<name>"`, uses the `--duration-*`/`--ease-*` tokens,
+and is fully disabled under `prefers-reduced-motion: reduce`. To give a new icon a
+gesture, add a selector there.
 
 **Icons.** `ds/core/Icon.jsx` resolves icons from the global `window.lucide.icons`,
 converting kebab-case to PascalCase. `src/ds/lucide-global.ts` registers only the ~60

@@ -33,6 +33,7 @@ export function Icon({ name, size = 16, strokeWidth = 1.75, color = 'currentColo
       strokeLinejoin="round"
       role={title ? 'img' : undefined}
       aria-hidden={title ? undefined : true}
+      data-icon={name}
       style={{ flex: 'none', display: 'block', ...style }}
     >
       {title ? <title>{title}</title> : null}

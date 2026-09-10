@@ -4,6 +4,7 @@
 @import './ds/tokens/spacing.css';
 @import './ds/tokens/effects.css';
 @import './ds/tokens/base.css';
+@import './ds/icon-motion.css';
 
 html,
 body,
