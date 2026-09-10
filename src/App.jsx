@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
+import { supabase } from './lib/supabase'
 import { Avatar } from './ds/core/Avatar.jsx'
 import { IconButton } from './ds/core/IconButton.jsx'
 import { Sidebar } from './ds/navigation/Sidebar.jsx'
 import { Toast } from './ds/feedback/Toast.jsx'
 import { Tooltip } from './ds/feedback/Tooltip.jsx'
+import { Login } from './screens/Login.jsx'
 import { Dashboard } from './screens/Dashboard.jsx'
 import { Scheduling } from './screens/Scheduling.jsx'
 import { FieldTest } from './screens/FieldTest.jsx'
@@ -35,9 +37,21 @@ const sections = [
 const screens = { dashboard: Dashboard, scheduling: Scheduling, field: FieldTest, boring: BoringLog, samples: LabSamples, reports: Reports, billing: Billing, projects: Projects, equipment: Equipment }
 
 export function App() {
+  const [session, setSession] = useState(null)
+  const [authReady, setAuthReady] = useState(false)
   const [route, setRoute] = useState(() => (location.hash || '#dashboard').slice(1))
   const [light, setLight] = useState(false)
   const [toasts, setToasts] = useState([])
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session)
+      setAuthReady(true)
+    })
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => setSession(s))
+    return () => sub.subscription.unsubscribe()
+  }, [])
+
   useEffect(() => { location.hash = route }, [route])
   // Keep back/forward and pasted deep links working, not just the initial hash.
   useEffect(() => {
@@ -49,19 +63,31 @@ export function App() {
     if (light) document.documentElement.setAttribute('data-theme', 'light')
     else document.documentElement.removeAttribute('data-theme')
   }, [light])
+
   const toast = (t) => {
     const id = Date.now() + Math.random()
     setToasts((ts) => [...ts, { ...t, id }])
     setTimeout(() => setToasts((ts) => ts.filter((x) => x.id !== id)), 4500)
   }
+
+  if (!authReady) {
+    return <div style={{ height: '100vh', background: 'var(--color-bg)' }} />
+  }
+  if (!session) return <Login />
+
+  const meta = session.user.user_metadata || {}
+  const name = meta.full_name || session.user.email
+  const role = meta.role || 'Staff'
   const Screen = screens[route] || Dashboard
+
   return (
     <div style={{ display: 'flex', height: '100vh', minHeight: 0, background: 'var(--color-bg)', color: 'var(--color-text)' }}>
       <Sidebar org="Northline Geotechnical" sections={sections} active={route} onSelect={setRoute}
-        footer={<div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Avatar name="Dana Whitfield" size="sm" tone="accent" />
-          <div style={{ minWidth: 0, flex: 1 }}><div style={{ fontSize: 'var(--text-xs)', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Dana Whitfield</div><div style={{ fontSize: 'var(--text-2xs)', color: 'var(--color-text-3)' }}>Lab manager</div></div>
+        footer={<div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Avatar name={name} size="sm" tone="accent" />
+          <div style={{ minWidth: 0, flex: 1 }}><div style={{ fontSize: 'var(--text-xs)', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</div><div style={{ fontSize: 'var(--text-2xs)', color: 'var(--color-text-3)' }}>{role}</div></div>
           <Tooltip content={light ? 'Dark theme' : 'Light theme'}><IconButton icon={light ? 'moon' : 'sun'} label="Toggle theme" size="sm" onClick={() => setLight((v) => !v)} /></Tooltip>
+          <Tooltip content="Sign out"><IconButton icon="log-out" label="Sign out" size="sm" onClick={() => supabase.auth.signOut()} /></Tooltip>
         </div>} />
       <main style={{ flex: 1, minWidth: 0, display: 'flex', minHeight: 0 }}>
         <Screen navigate={setRoute} toast={toast} />

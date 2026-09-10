@@ -7,10 +7,10 @@ import {
   CalendarDays, CalendarPlus, Camera, Check, CheckCheck, CheckCircle2, ChevronDown,
   ChevronLeft, ChevronRight, ChevronUp, ClipboardCheck, ClipboardList, Clock, CloudCheck,
   Download, Droplets, FileCheck2, FileText, Filter, FlaskConical, FolderKanban, Inbox,
-  Info, Kanban, Layers, LayoutDashboard, LayoutGrid, List, Mail, MapPin, Maximize2,
-  MessageSquare, Minus, MoreHorizontal, Plus, Printer, Receipt, Ruler, Save, ScanBarcode,
-  Search, Send, Settings2, SkipForward, TestTubes, TrendingDown, TrendingUp, Undo2,
-  Upload, UserPlus, UserRoundX, Users, Wrench, X,
+  Info, Kanban, Layers, LayoutDashboard, LayoutGrid, List, Lock, LogIn, LogOut, Mail,
+  MapPin, Maximize2, MessageSquare, Minus, Moon, MoreHorizontal, Plus, Printer, Receipt,
+  Ruler, Save, ScanBarcode, Search, Send, Settings2, SkipForward, Sun, TestTubes,
+  TrendingDown, TrendingUp, Undo2, Upload, UserPlus, UserRoundX, Users, Wrench, X,
 } from 'lucide'
 
 const icons = {
@@ -18,10 +18,10 @@ const icons = {
   CalendarDays, CalendarPlus, Camera, Check, CheckCheck, CheckCircle2, ChevronDown,
   ChevronLeft, ChevronRight, ChevronUp, ClipboardCheck, ClipboardList, Clock, CloudCheck,
   Download, Droplets, FileCheck2, FileText, Filter, FlaskConical, FolderKanban, Inbox,
-  Info, Kanban, Layers, LayoutDashboard, LayoutGrid, List, Mail, MapPin, Maximize2,
-  MessageSquare, Minus, MoreHorizontal, Plus, Printer, Receipt, Ruler, Save, ScanBarcode,
-  Search, Send, Settings2, SkipForward, TestTubes, TrendingDown, TrendingUp, Undo2,
-  Upload, UserPlus, UserRoundX, Users, Wrench, X,
+  Info, Kanban, Layers, LayoutDashboard, LayoutGrid, List, Lock, LogIn, LogOut, Mail,
+  MapPin, Maximize2, MessageSquare, Minus, Moon, MoreHorizontal, Plus, Printer, Receipt,
+  Ruler, Save, ScanBarcode, Search, Send, Settings2, SkipForward, Sun, TestTubes,
+  TrendingDown, TrendingUp, Undo2, Upload, UserPlus, UserRoundX, Users, Wrench, X,
 }
 
 declare global {

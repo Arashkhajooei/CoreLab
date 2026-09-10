@@ -1,0 +1,14 @@
+import { createClient } from '@supabase/supabase-js'
+
+// The PUBLISHABLE key is designed to be exposed in a browser bundle; access is
+// governed by RLS and Auth. The secret/service key must never appear here.
+const url = import.meta.env.VITE_SUPABASE_URL as string | undefined
+const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined
+
+if (!url || !key) {
+  throw new Error(
+    'Missing Supabase config. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY (see .env.example).',
+  )
+}
+
+export const supabase = createClient(url, key)

@@ -24,7 +24,13 @@ jobs:
           bun-version: latest
       - uses: actions/configure-pages@v5
       - run: bun install --frozen-lockfile
-      - run: bun run build
+      - name: Build
+        # The publishable key is designed to be public (RLS + Auth govern access).
+        # Repo secrets of the same name override these defaults if set.
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://ibylxunqtpbuobvjwxoz.supabase.co' }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_X_eoA7uToTLjHIiNobB2yg_sCbkXD-y' }}
+        run: bun run build
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist

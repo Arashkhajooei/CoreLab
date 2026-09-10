@@ -39,6 +39,24 @@ converting kebab-case to PascalCase. `src/ds/lucide-global.ts` registers only th
 icons this app uses — importing lucide's full set costs ~700 kB. If an icon ever
 renders as a dashed placeholder square, add its PascalCase name to that file.
 
+## Auth
+
+The whole app sits behind Supabase Auth (email + password). `src/screens/Login.jsx` is
+the sign-in screen; `App.jsx` holds the session and renders it until a session exists,
+with sign-out in the sidebar footer. There is deliberately **no public sign-up** — this
+is an internal tool, so accounts are provisioned by an admin:
+
+```bash
+curl -X POST "https://<ref>.supabase.co/auth/v1/admin/users" \
+  -H "apikey: $SUPABASE_SECRET_KEY" -H "Authorization: Bearer $SUPABASE_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"someone@northline.com","password":"…","email_confirm":true,
+       "user_metadata":{"full_name":"Full Name","role":"Lab manager"}}'
+```
+
+`user_metadata.full_name` and `role` drive the sidebar footer. The frontend only ever
+uses the publishable key; the secret key is for admin calls like the one above.
+
 ## Stack
 
 React 19 + Vite + TypeScript. Screens and the design system are `.jsx` (kept as-is
