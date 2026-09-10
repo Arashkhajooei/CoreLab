@@ -25,6 +25,8 @@ jobs:
       # Enables GitHub Pages on first run using the workflow's own token.
       - name: Configure Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - run: bun install --frozen-lockfile
       - name: Build
         # The publishable key is safe to expose (protected by RLS). Repo secrets
