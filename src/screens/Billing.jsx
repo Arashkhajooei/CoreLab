@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { Page, Status, money } from '../app/shell.jsx'
+import { Page, Status, money, persist } from '../app/shell.jsx'
 import { D } from '../data/corelab.js'
+import { supabase } from '../lib/supabase'
 import { Button } from '../ds/core/Button.jsx'
 import { IconButton } from '../ds/core/IconButton.jsx'
 import { Avatar } from '../ds/core/Avatar.jsx'
@@ -24,7 +25,31 @@ export function Billing({ toast }) {
   const chosen = entries.filter((e) => sel.includes(e.id))
   const total = chosen.reduce((a, e) => a + e.hours * e.rate, 0)
   const unbilled = entries.filter((e) => e.status === 'Unbilled')
-  const create = () => { const id = 'INV-2045'; setEntries((es) => es.map((e) => (sel.includes(e.id) ? { ...e, status: 'Invoiced' } : e))); setInvoices((is) => [{ id, project: '24-0187', client: 'Meridian DOT', issued: 'Sep 14', due: 'Oct 14', amount: Math.round(total), status: 'Draft' }, ...is]); setSel([]); setOpen(false); setTab('invoices'); toast({ tone: 'success', title: id + ' created', description: money(total) + ' · ' + chosen.length + ' time entries · draft' }) }
+  // Derive the next invoice number and bill against the selected entries' own project,
+  // so the id can't collide and the project reference is real.
+  const nextInvoiceId = () => {
+    const max = invoices.reduce((m, i) => {
+      const n = parseInt(String(i.id).replace(/\D/g, ''), 10)
+      return Number.isFinite(n) ? Math.max(m, n) : m
+    }, 2000)
+    return 'INV-' + (max + 1)
+  }
+  const billedProject = chosen[0]?.project ?? D.projects[0]?.id
+  const billedClient = D.project[billedProject]?.client ?? ''
+
+  const create = async () => {
+    const id = nextInvoiceId()
+    const picked = [...sel]
+    const amount = Math.round(total)
+    setEntries((es) => es.map((e) => (picked.includes(e.id) ? { ...e, status: 'Invoiced' } : e)))
+    setInvoices((is) => [{ id, project: billedProject, client: billedClient, issued: 'Sep 14', due: 'Oct 14', amount, status: 'Draft' }, ...is])
+    setSel([])
+    setOpen(false)
+    setTab('invoices')
+    toast({ tone: 'success', title: id + ' created', description: money(total) + ' · ' + picked.length + ' time entries · draft' })
+    const ok = await persist(supabase.from('invoices').insert({ id, project_id: billedProject, client: billedClient, issued: 'Sep 14', due: 'Oct 14', amount, status: 'Draft' }), toast, id)
+    if (ok) await persist(supabase.from('time_entries').update({ status: 'Invoiced' }).in('id', picked), toast, 'mark entries invoiced')
+  }
   const timeCols = [
     { key: 'tech', label: 'Technician', render: (r) => <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><Avatar name={D.tech[r.tech].name} size="xs" />{D.tech[r.tech].name}</span> },
     { key: 'date', label: 'Date', mono: true, muted: true },
@@ -63,7 +88,7 @@ export function Billing({ toast }) {
           <DataTable columns={timeCols} rows={tab === 'unbilled' ? unbilled : entries} selectable selected={sel} onSelect={setSel} />
         </Card>
       )}
-      {open ? <Dialog title="Create invoice" description={'Riverside Interchange · Meridian DOT · ' + chosen.length + ' time entries'} onClose={() => setOpen(false)} width={520}
+      {open ? <Dialog title="Create invoice" description={(D.project[billedProject]?.name ?? '—') + ' · ' + billedClient + ' · ' + chosen.length + ' time entries'} onClose={() => setOpen(false)} width={520}
         actions={<><Button variant="secondary" onClick={() => setOpen(false)}>Cancel</Button><Button icon="receipt" onClick={create}>Create draft — {money(total)}</Button></>}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <Field label="Invoice date"><Input mono defaultValue="Sep 14, 2026" icon="calendar" /></Field>

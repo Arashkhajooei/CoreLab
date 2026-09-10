@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Page, Status } from '../app/shell.jsx'
+import { Page, Status, money } from '../app/shell.jsx'
 import { D } from '../data/corelab.js'
 import { Button } from '../ds/core/Button.jsx'
 import { Badge } from '../ds/core/Badge.jsx'
@@ -31,20 +31,43 @@ export function Dashboard({ navigate, toast }) {
     { key: 'age', label: 'Age', mono: true, align: 'right', render: (r) => r.age + ' d' },
     { key: 'status', label: 'Status', render: (r) => <Status value={r.status} /> },
   ]
+  // Derived from live data, so the panel reflects what is actually in the lab.
+  const openWo = D.workOrders.filter((w) => w.status !== 'Complete')
+  const inLab = D.samples.filter((s) => s.status !== 'Tested')
+  const unbilled = D.timeEntries.filter((e) => e.status === 'Unbilled')
+  const unbilledAmount = unbilled.reduce((a, e) => a + e.hours * e.rate, 0)
+  const unbilledHours = unbilled.reduce((a, e) => a + e.hours, 0)
+
   const alerts = [
-    { icon: 'wrench', tone: 'warning', text: 'Compression machine CM-02 calibration due in 4 days', go: 'equipment' },
-    { icon: 'badge-check', tone: 'danger', text: 'Grace Lindqvist — ICC Soils certification expired Aug 15', go: 'equipment' },
-    { icon: 'alert-triangle', tone: 'danger', text: 'Grout cube S-0388 failed spec (1,960 psi < 2,000 psi)', go: 'samples' },
-    { icon: 'receipt', tone: 'danger', text: 'INV-2041 City of Fairmont is 9 days overdue', go: 'billing' },
-  ]
+    ...D.equipment.filter((e) => e.status === 'Overdue').map((e) => ({
+      icon: 'wrench', tone: 'danger', go: 'equipment',
+      text: `${e.type} ${e.id} calibration is overdue — removed from dispatch`,
+    })),
+    ...D.equipment.filter((e) => String(e.status).startsWith('Due in')).map((e) => ({
+      icon: 'wrench', tone: 'warning', go: 'equipment',
+      text: `${e.type} ${e.id} calibration ${String(e.status).toLowerCase()}`,
+    })),
+    ...D.certifications.filter((c) => c.status === 'Expired').map((c) => ({
+      icon: 'badge-check', tone: 'danger', go: 'equipment',
+      text: `${D.tech[c.tech]?.name ?? 'Staff'} — ${c.cert} expired ${c.expires}`,
+    })),
+    ...D.samples.filter((s) => s.result && s.result.pass === false).map((s) => ({
+      icon: 'alert-triangle', tone: 'danger', go: 'samples',
+      text: `${s.material} ${s.id} failed spec${s.result.strength ? ` (${s.result.strength.toLocaleString()} psi)` : ''}`,
+    })),
+    ...D.invoices.filter((i) => i.status === 'Overdue').map((i) => ({
+      icon: 'receipt', tone: 'danger', go: 'billing',
+      text: `${i.id} ${i.client} is overdue`,
+    })),
+  ].slice(0, 8)
   return (
     <Page header={<PageHeader title="Dashboard" meta={<><span>Mon, Sep 14</span><span>Northline Geotechnical · all offices</span></>}
       actions={<><Segmented size="sm" options={['Today', 'Week', 'Month']} value={range} onChange={setRange} /><Button variant="secondary" icon="download" onClick={() => toast({ tone: 'success', title: 'Export started', description: 'Dashboard summary will download shortly' })}>Export</Button><Button icon="plus" onClick={() => navigate('scheduling')}>New work order</Button></>} />}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 'var(--grid-gap)' }}>
-        <Stat label="Open work orders" value="128" delta="+9" deltaTone="accent" hint="vs last week" icon="clipboard-list" />
-        <Stat label="Samples in lab" value="342" delta="+18" hint="due today: 14" icon="flask-conical" />
-        <Stat label="Report turnaround" value="1.8" unit="days" delta="−0.4" deltaTone="success" hint="30-day avg" icon="file-check-2" />
-        <Stat label="Unbilled" value="$46,210" delta="+$8,120" deltaTone="warning" hint="212 hours" icon="receipt" />
+        <Stat label="Open work orders" value={String(openWo.length)} delta={`${today.length} today`} deltaTone="accent" hint={`${D.workOrders.filter((w) => w.status === 'Unassigned').length} unassigned`} icon="clipboard-list" />
+        <Stat label="Samples in lab" value={String(inLab.length)} delta={`${D.samples.filter((s) => s.status === 'Due today').length} due today`} hint={`${D.samples.length} total on file`} icon="flask-conical" />
+        <Stat label="Reports pending" value={String(pending.length)} delta={`${D.reports.filter((r) => r.status === 'Delivered').length} delivered`} deltaTone="success" hint="awaiting review" icon="file-check-2" />
+        <Stat label="Unbilled" value={money(unbilledAmount)} delta={`${unbilled.length} entries`} deltaTone="warning" hint={`${unbilledHours.toFixed(1)} hours`} icon="receipt" />
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)', gap: 'var(--grid-gap)', marginTop: 'var(--grid-gap)' }}>
         <Card title="Today's dispatch" meta={today.length + ' work orders · ' + new Set(today.map((w) => w.tech)).size + ' technicians in the field'} flush actions={<Button variant="ghost" size="sm" iconRight="arrow-right" onClick={() => navigate('scheduling')}>Open board</Button>}>

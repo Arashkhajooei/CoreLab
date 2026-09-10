@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { Page, Status } from '../app/shell.jsx'
+import { Page, Status, persist } from '../app/shell.jsx'
 import { D } from '../data/corelab.js'
+import { supabase } from '../lib/supabase'
 import { Button } from '../ds/core/Button.jsx'
 import { IconButton } from '../ds/core/IconButton.jsx'
 import { Badge } from '../ds/core/Badge.jsx'
@@ -25,6 +26,7 @@ export function Scheduling({ toast }) {
     setOpen(null)
     setAssign('')
     toast({ tone: 'accent', title: 'Work order dispatched', description: wo.id + ' → ' + D.tech[techId].name + ', ' + D.days[wo.day] + ' ' + wo.start })
+    persist(supabase.from('work_orders').update({ tech_id: techId, status: 'Dispatched' }).eq('id', wo.id), toast, 'dispatch ' + wo.id)
   }
   const cell = { borderLeft: '1px solid var(--color-hairline)', borderBottom: '1px solid var(--color-hairline)', padding: 6, minHeight: 84, display: 'flex', flexDirection: 'column', gap: 6 }
   return (
@@ -80,7 +82,7 @@ export function Scheduling({ toast }) {
       </div>
       {open ? (
         <Dialog title={open.id + ' — ' + open.test} description={D.project[open.project].name + ' · ' + D.project[open.project].client + ' · ' + D.days[open.day] + ' at ' + open.start + ' · ' + open.hours + ' h'} onClose={() => setOpen(null)} width={520}
-          actions={<><Button variant="secondary" onClick={() => setOpen(null)}>Close</Button>{open.tech ? <Button variant="secondary" icon="user-round-x" onClick={() => { setOrders((os) => os.map((o) => (o.id === open.id ? { ...o, tech: null, status: 'Unassigned' } : o))); setOpen(null); toast({ tone: 'warning', title: 'Work order unassigned', description: open.id + ' returned to the queue' }) }}>Unassign</Button> : null}<Button icon="send" disabled={!assign && !open.tech} onClick={() => dispatch(open, assign || open.tech)}>{open.tech ? 'Re-dispatch' : 'Dispatch'}</Button></>}>
+          actions={<><Button variant="secondary" onClick={() => setOpen(null)}>Close</Button>{open.tech ? <Button variant="secondary" icon="user-round-x" onClick={() => { setOrders((os) => os.map((o) => (o.id === open.id ? { ...o, tech: null, status: 'Unassigned' } : o))); setOpen(null); toast({ tone: 'warning', title: 'Work order unassigned', description: open.id + ' returned to the queue' }); persist(supabase.from('work_orders').update({ tech_id: null, status: 'Unassigned' }).eq('id', open.id), toast, 'unassign ' + open.id) }}>Unassign</Button> : null}<Button icon="send" disabled={!assign && !open.tech} onClick={() => dispatch(open, assign || open.tech)}>{open.tech ? 'Re-dispatch' : 'Dispatch'}</Button></>}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <Field label="Status"><div style={{ height: 'var(--control-h-md)', display: 'flex', alignItems: 'center' }}><Status value={open.status} /></div></Field>
             <Field label="Assign to" hint="Filtered to certified technicians">

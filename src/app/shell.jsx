@@ -14,15 +14,20 @@ export function Page({ header, children, aside, asideWidth = 360, padded = true 
   )
 }
 
-export const statusTone = (s) =>
-  ({
-    'In progress': 'accent', Dispatched: 'accent', Scheduled: 'neutral', Unassigned: 'warning', Complete: 'success', Submitted: 'accent',
-    'Pending review': 'warning', Approved: 'success', Delivered: 'success', Rejected: 'danger',
-    'Due today': 'warning', 'In test': 'accent', Received: 'neutral', Tested: 'success', Curing: 'neutral',
-    Unbilled: 'warning', Invoiced: 'success', Sent: 'accent', Paid: 'success', Overdue: 'danger', Void: 'neutral',
-    Current: 'success', 'Due in 4 days': 'warning', 'Expiring soon': 'warning', Expired: 'danger',
-    Active: 'success', Closeout: 'neutral', 'On hold': 'warning',
-  }[s] || 'neutral')
+export const statusTone = (s) => {
+  // Calibration due dates vary ("Due in 6 days"), so match the family, not one literal.
+  if (typeof s === 'string' && s.startsWith('Due in')) return 'warning'
+  return TONES[s] || 'neutral'
+}
+
+const TONES = {
+  'In progress': 'accent', Dispatched: 'accent', Scheduled: 'neutral', Unassigned: 'warning', Complete: 'success', Submitted: 'accent',
+  'Pending review': 'warning', Approved: 'success', Delivered: 'success', Rejected: 'danger',
+  'Due today': 'warning', 'In test': 'accent', Received: 'neutral', Tested: 'success', Curing: 'neutral',
+  Unbilled: 'warning', Invoiced: 'success', Sent: 'accent', Paid: 'success', Overdue: 'danger', Void: 'neutral',
+  Current: 'success', 'Expiring soon': 'warning', Expired: 'danger',
+  Active: 'success', Closeout: 'neutral', 'On hold': 'warning',
+}
 
 export function Status({ value, size }) {
   return (
@@ -33,3 +38,11 @@ export function Status({ value, size }) {
 }
 
 export const money = (n) => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+
+// Screens update local state optimistically; this writes the same change through and
+// only speaks up if the write fails, so a silent desync can't happen.
+export async function persist(query, toast, what) {
+  const { error } = await query
+  if (error && toast) toast({ tone: 'danger', title: "Couldn't save", description: `${what}: ${error.message}` })
+  return !error
+}

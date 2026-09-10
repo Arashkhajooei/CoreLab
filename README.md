@@ -89,11 +89,41 @@ bun run dev
 
 ## Data
 
-Screens read `src/data/corelab.js` — the design's fixture data — and mutate local
-React state, so dispatching a work order or recording a break updates the UI but does
-not persist. Wiring this to a real backend is the next step.
+The app runs on Supabase. `supabase/migrations/0002_lab_schema.sql` defines nine
+tables — `staff`, `projects`, `work_orders`, `samples`, `reports`, `time_entries`,
+`invoices`, `equipment`, `certifications` — with RLS restricted to `authenticated`,
+so signing out leaves the data unreadable.
 
-A Supabase project is already provisioned for this repo (`supabase/migrations/`,
-seeded by `scripts/seed.mjs`) from an earlier metafields prototype. Those tables model
-custom field definitions, not lab operations, so they are unused by this app; the
-prototype's UI is in git history at commit `8984e98`.
+`src/data/corelab.js` loads all nine in one pass and shapes them into `D`, which keeps
+the field names the screens were written against (the design's `window.CLData`).
+`App.jsx` awaits that load before mounting any screen, so each screen's
+`useState(D.x)` initialiser sees populated data. Column names that collide with
+Postgres keywords are mapped there (`set_label`→`set`, `cast_date`→`cast`,
+`start_time`→`start`, `last_cal`→`last`, `next_due`→`next`, `work_date`→`date`).
+
+Dashboard stat tiles, the "Needs attention" panel and the sidebar counts are all
+derived from the loaded data rather than hardcoded, so they can't drift from the
+tables.
+
+**Writes.** These actions update local state optimistically and persist through
+`persist()` in `src/app/shell.jsx`, which surfaces a danger toast if the write fails:
+dispatch/unassign a work order, record a sample break, approve or return a report, and
+create an invoice (which also flips the billed time entries to `Invoiced`).
+
+**Still fixture-driven:** `FieldTest` and `BoringLog` are single-record detail forms
+that the design ships with their own inline data (spec limits, strata, cylinders);
+they have no list behind them yet.
+
+Seed a database with realistic volume:
+
+```bash
+SUPABASE_URL=… SUPABASE_SECRET_KEY=… bun scripts/seed-lab.mjs
+```
+
+Every row upserts on its id, so re-running is safe. Dates are display strings
+("Sep 14", "07:30") because the design renders them directly; moving to real
+date/time types is a worthwhile follow-up.
+
+An earlier metafields prototype also lives in this project's history —
+`supabase/migrations/0001_init.sql` and `scripts/seed.mjs` — and its tables are
+unused by this app. The prototype's UI is at commit `8984e98`.

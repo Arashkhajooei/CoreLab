@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { Page, Status } from '../app/shell.jsx'
+import { Page, Status, persist } from '../app/shell.jsx'
 import { D } from '../data/corelab.js'
+import { supabase } from '../lib/supabase'
 import { Button } from '../ds/core/Button.jsx'
 import { Badge } from '../ds/core/Badge.jsx'
 import { Tag } from '../ds/core/Tag.jsx'
@@ -24,7 +25,12 @@ export function LabSamples({ navigate, toast }) {
   const cur = samples.find((s) => s.id === active)
   const area = 12.57
   const strength = Math.round(parseFloat(String(load).replace(/,/g, '')) / area / 10) * 10
-  const record = () => { setSamples((ss) => ss.map((s) => (s.id === cur.id ? { ...s, status: 'Tested', result: { strength, pass: strength >= 4000 } } : s))); toast({ tone: strength >= 4000 ? 'success' : 'danger', title: 'Result recorded — ' + cur.id, description: strength.toLocaleString() + ' psi · ' + (strength >= 4000 ? 'meets 4,000 psi spec' : 'below 4,000 psi spec — PM notified') }) }
+  const record = () => {
+    const result = { strength, pass: strength >= 4000 }
+    setSamples((ss) => ss.map((s) => (s.id === cur.id ? { ...s, status: 'Tested', result } : s)))
+    toast({ tone: result.pass ? 'success' : 'danger', title: 'Result recorded — ' + cur.id, description: strength.toLocaleString() + ' psi · ' + (result.pass ? 'meets 4,000 psi spec' : 'below 4,000 psi spec — PM notified') })
+    persist(supabase.from('samples').update({ status: 'Tested', result }).eq('id', cur.id), toast, 'record ' + cur.id)
+  }
   const cols = [
     { key: 'id', label: 'Sample', mono: true, strong: true },
     { key: 'project', label: 'Project', render: (r) => D.project[r.project].name },
@@ -34,7 +40,8 @@ export function LabSamples({ navigate, toast }) {
     { key: 'cast', label: 'Cast / received', mono: true },
     { key: 'due', label: 'Due', mono: true, render: (r) => <span style={{ color: r.status === 'Due today' ? 'var(--color-warning-text)' : undefined }}>{r.due}</span> },
     { key: 'age', label: 'Age', mono: true, align: 'right', render: (r) => r.age + ' d' },
-    { key: 'result', label: 'Result', mono: true, align: 'right', render: (r) => (r.result ? <span style={{ color: r.result.pass ? undefined : 'var(--color-danger-text)' }}>{r.result.strength.toLocaleString()} psi</span> : <span style={{ color: 'var(--color-text-3)' }}>—</span>) },
+    // Not every test yields a strength (moisture, Atterberg), so result.strength can be null.
+    { key: 'result', label: 'Result', mono: true, align: 'right', render: (r) => (r.result && r.result.strength != null ? <span style={{ color: r.result.pass ? undefined : 'var(--color-danger-text)' }}>{r.result.strength.toLocaleString()} psi</span> : <span style={{ color: 'var(--color-text-3)' }}>—</span>) },
     { key: 'status', label: 'Status', render: (r) => <Status value={r.status} /> },
   ]
   return (
@@ -52,7 +59,7 @@ export function LabSamples({ navigate, toast }) {
         {cur.result ? (
           <div style={{ padding: 16 }}>
             <div style={{ fontSize: 'var(--text-2xs)', letterSpacing: 'var(--tracking-caps)', textTransform: 'uppercase', color: 'var(--color-text-3)', fontWeight: 500 }}>Result</div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 8 }}><span className="mono" style={{ fontSize: 'var(--text-3xl)', fontWeight: 500, letterSpacing: '-0.015em', lineHeight: 1 }}>{cur.result.strength.toLocaleString()}</span><span className="mono" style={{ color: 'var(--color-text-3)' }}>psi</span><Badge tone={cur.result.pass ? 'success' : 'danger'} dot style={{ marginLeft: 'auto' }}>{cur.result.pass ? 'Meets spec' : 'Below spec'}</Badge></div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 8 }}><span className="mono" style={{ fontSize: 'var(--text-3xl)', fontWeight: 500, letterSpacing: '-0.015em', lineHeight: 1 }}>{cur.result.strength != null ? cur.result.strength.toLocaleString() : '—'}</span><span className="mono" style={{ color: 'var(--color-text-3)' }}>{cur.result.strength != null ? 'psi' : 'no strength result'}</span><Badge tone={cur.result.pass ? 'success' : 'danger'} dot style={{ marginLeft: 'auto' }}>{cur.result.pass ? 'Meets spec' : 'Below spec'}</Badge></div>
             <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-2)', marginTop: 10 }}>Tested by Sam Whitaker on CM-02 · fracture type 3</div>
             <Button variant="secondary" size="sm" icon="file-text" style={{ marginTop: 14 }} onClick={() => navigate('reports')}>Open report draft</Button>
           </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { Page, Status } from '../app/shell.jsx'
+import { Page, Status, persist } from '../app/shell.jsx'
 import { D } from '../data/corelab.js'
+import { supabase } from '../lib/supabase'
 import { Button } from '../ds/core/Button.jsx'
 import { IconButton } from '../ds/core/IconButton.jsx'
 import { Badge } from '../ds/core/Badge.jsx'
@@ -23,8 +24,12 @@ export function Reports({ toast }) {
   const rows = reports.filter((r) => r.status === tab)
   const cur = reports.find((r) => r.id === active) || rows[0]
   const count = (s) => reports.filter((r) => r.status === s).length
-  const approve = () => { setReports((rs) => rs.map((r) => (r.id === cur.id ? { ...r, status: 'Delivered' } : r))); setConfirm(false); toast({ tone: 'success', title: 'Report delivered', description: cur.id + ' sent to 3 recipients at ' + D.project[cur.project].client }) }
-  const reject = () => { setReports((rs) => rs.map((r) => (r.id === cur.id ? { ...r, status: 'Rejected' } : r))); toast({ tone: 'warning', title: 'Returned to author', description: cur.id + ' → ' + D.tech[cur.author].name + ' with your comments' }) }
+  const setStatus = (status) => {
+    setReports((rs) => rs.map((r) => (r.id === cur.id ? { ...r, status } : r)))
+    persist(supabase.from('reports').update({ status }).eq('id', cur.id), toast, cur.id)
+  }
+  const approve = () => { setStatus('Delivered'); setConfirm(false); toast({ tone: 'success', title: 'Report delivered', description: cur.id + ' sent to 3 recipients at ' + D.project[cur.project].client }) }
+  const reject = () => { setStatus('Rejected'); toast({ tone: 'warning', title: 'Returned to author', description: cur.id + ' → ' + (D.tech[cur.author]?.name ?? 'the author') + ' with your comments' }) }
   const cols = [
     { key: 'id', label: 'Report', mono: true, strong: true },
     { key: 'title', label: 'Title', width: 280, ellipsis: true },
