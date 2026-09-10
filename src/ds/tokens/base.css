@@ -1,0 +1,40 @@
+/* CoreLab — base resets. Everything else is inline or component-level. */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  font-weight: var(--font-weight-regular);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+}
+p { margin: 0; }
+a { color: var(--color-accent-text); text-decoration: none; text-underline-offset: 3px; }
+a:hover { color: var(--color-accent-hover); text-decoration: underline; }
+img, svg { display: block; }
+img { max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+code, kbd, samp, pre { font-family: var(--font-mono); font-size: 0.92em; }
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+::selection { background: var(--color-selection); }
+::placeholder { color: var(--color-text-3); opacity: 1; }
+hr { height: 2px; border: 0; margin: var(--space-4) 0; background: var(--color-divider); }
+.grayscale { filter: grayscale(1) contrast(1.08); }
+.mono { font-family: var(--font-mono); font-feature-settings: var(--font-numeric); }
+.tnum { font-feature-settings: var(--font-numeric); }
+* { scrollbar-width: thin; scrollbar-color: var(--color-neutral-700) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb { background: var(--color-neutral-700); border: 3px solid transparent; background-clip: padding-box; }
+*::-webkit-scrollbar-track { background: transparent; }

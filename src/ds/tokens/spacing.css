@@ -1,0 +1,44 @@
+/* CoreLab — spacing, sizing and layout tokens. 4px base, balanced density. */
+:root {
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* control heights — balanced density */
+  --control-h-sm: 28px;
+  --control-h-md: 34px;
+  --control-h-lg: 40px;
+  --control-px-sm: 10px;
+  --control-px-md: 12px;
+  --control-px-lg: 16px;
+
+  /* data density */
+  --row-h: 40px;            /* table row */
+  --row-h-dense: 32px;
+  --cell-px: 12px;
+
+  /* app frame */
+  --sidebar-w: 232px;
+  --sidebar-w-collapsed: 56px;
+  --topbar-h: 52px;
+  --page-px: 24px;
+  --page-py: 20px;
+  --content-max: 1440px;
+
+  /* grid */
+  --grid-gap: 16px;
+  --grid-cols: 12;
+
+  --z-sticky: 10;
+  --z-dropdown: 20;
+  --z-dialog: 40;
+  --z-toast: 50;
+}

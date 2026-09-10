@@ -1,0 +1,33 @@
+/* CoreLab — typography tokens. Archivo carries UI and headings; JetBrains Mono carries measured values, IDs and codes. */
+:root {
+  --font-heading: "Archivo", system-ui, sans-serif;
+  --font-body: "Archivo", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-heading-weight: 600;
+
+  /* fixed scale — density moves spacing, never type size */
+  --text-2xs: 11px;   /* table headers, kickers, badges */
+  --text-xs: 12px;    /* meta, hints, captions */
+  --text-sm: 13px;    /* default UI text: table cells, inputs, buttons */
+  --text-md: 14px;    /* body copy, dialog text */
+  --text-lg: 16px;    /* card titles, section titles */
+  --text-xl: 20px;    /* page titles */
+  --text-2xl: 24px;   /* stat values */
+  --text-3xl: 32px;   /* hero numbers, report covers */
+  --text-4xl: 40px;   /* display */
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.3;
+  --leading-normal: 1.5;
+
+  --tracking-tight: -0.015em;
+  --tracking-normal: 0;
+  --tracking-caps: 0.08em;   /* uppercase kickers and table headers */
+
+  --font-numeric: "tnum" 1, "lnum" 1;   /* tabular figures for any aligned number */
+}

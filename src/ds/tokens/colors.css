@@ -1,0 +1,154 @@
+/* CoreLab — color tokens. Dark (graphite) is the default on :root; [data-theme="light"] re-points the semantic layer.
+   Ramps are generated in OKLCH on one shared lightness scale (accent #4f8cff anchors the 500 step, L≈0.657),
+   so the same step of any role has the same visual weight. Base ramps never change between themes — only the semantic aliases do. */
+
+:root {
+  /* — tonal ramps (theme-independent) — */
+  --color-neutral-100: #f5f5f5;
+  --color-neutral-200: #e8e8e8;
+  --color-neutral-300: #d4d4d4;
+  --color-neutral-400: #b7b7b7;
+  --color-neutral-500: #919191;
+  --color-neutral-600: #717171;
+  --color-neutral-700: #555555;
+  --color-neutral-800: #3a3a3a;
+  --color-neutral-900: #242424;
+
+  --color-accent-100: #f0f5ff;
+  --color-accent-200: #dce9ff;
+  --color-accent-300: #bdd5ff;
+  --color-accent-400: #90b8ff;
+  --color-accent-500: #4f8cff;
+  --color-accent-600: #346bd5;
+  --color-accent-700: #1f4faa;
+  --color-accent-800: #12357a;
+  --color-accent-900: #08214f;
+
+  --color-success-100: #e2fee8;
+  --color-success-200: #c6f6d1;
+  --color-success-300: #9ee9b2;
+  --color-success-400: #62d287;
+  --color-success-500: #00ae58;
+  --color-success-600: #008844;
+  --color-success-700: #006732;
+  --color-success-800: #004820;
+  --color-success-900: #002d12;
+
+  --color-warning-100: #fff3e5;
+  --color-warning-200: #ffe3c1;
+  --color-warning-300: #ffc986;
+  --color-warning-400: #f2a635;
+  --color-warning-500: #c58000;
+  --color-warning-600: #9b6400;
+  --color-warning-700: #764b00;
+  --color-warning-800: #523300;
+  --color-warning-900: #351e00;
+
+  --color-danger-100: #fff2f0;
+  --color-danger-200: #ffdfdc;
+  --color-danger-300: #ffc3be;
+  --color-danger-400: #ff958f;
+  --color-danger-500: #ec5958;
+  --color-danger-600: #c23a3c;
+  --color-danger-700: #992127;
+  --color-danger-800: #6d1217;
+  --color-danger-900: #47090c;
+
+  /* — brand anchor — */
+  --color-brand: #4f8cff;
+
+  /* — ground & surfaces (dark, neutral graphite) — */
+  --color-bg: #131313;          /* app ground */
+  --color-surface: #1b1b1b;     /* panels, cards, sidebar */
+  --color-surface-2: #232323;   /* inputs, raised rows, popovers */
+  --color-surface-3: #2b2b2b;   /* hover on surface-2, pressed rows */
+  --color-overlay: rgba(0, 0, 0, 0.6);
+
+  /* — ink — */
+  --color-text: #ececec;        /* primary */
+  --color-text-2: #a8a8a8;      /* secondary: labels, meta */
+  --color-text-3: #767676;      /* tertiary: placeholders, disabled ink */
+  --color-text-inverse: #131313;
+
+  /* — rules — */
+  --color-divider: rgba(236, 236, 236, 0.22);   /* strong 2px rules between major sections */
+  --color-hairline: rgba(236, 236, 236, 0.10);  /* 1px rules inside components, table rows */
+  --color-border-input: rgba(236, 236, 236, 0.18);
+  --color-border-input-hover: rgba(236, 236, 236, 0.34);
+
+  /* — accent (semantic) — */
+  --color-accent: var(--color-accent-500);
+  --color-accent-hover: var(--color-accent-400);
+  --color-accent-active: var(--color-accent-300);
+  --color-accent-text: var(--color-accent-400);            /* accent used as text / icon on the ground */
+  --color-accent-tint: rgba(79, 140, 255, 0.14);           /* selected rows, ghost hover */
+  --color-accent-tint-strong: rgba(79, 140, 255, 0.24);
+  --color-on-accent: #0a1428;                              /* ink on a solid accent fill (≥6:1) */
+
+  /* — status (semantic) — */
+  --color-success: var(--color-success-500);
+  --color-success-text: var(--color-success-400);
+  --color-success-tint: color-mix(in srgb, var(--color-success-500) 16%, transparent);
+  --color-warning: var(--color-warning-500);
+  --color-warning-text: var(--color-warning-400);
+  --color-warning-tint: color-mix(in srgb, var(--color-warning-500) 16%, transparent);
+  --color-danger: var(--color-danger-500);
+  --color-danger-text: var(--color-danger-400);
+  --color-danger-tint: color-mix(in srgb, var(--color-danger-500) 16%, transparent);
+  --color-on-status: #131313;                              /* ink on a solid status fill */
+
+  /* — interaction — */
+  --color-hover: rgba(236, 236, 236, 0.06);
+  --color-pressed: rgba(236, 236, 236, 0.11);
+  --color-selected: var(--color-accent-tint);
+  --color-focus: var(--color-accent-400);
+  --color-selection: rgba(79, 140, 255, 0.35);
+
+  color-scheme: dark;
+}
+
+/* Light theme — same tokens, re-pointed. Apply data-theme="light" on <html> or any subtree. */
+[data-theme="light"] {
+  --color-bg: #f4f4f4;
+  --color-surface: #ffffff;
+  --color-surface-2: #ececec;
+  --color-surface-3: #e0e0e0;
+  --color-overlay: rgba(19, 19, 19, 0.5);
+
+  --color-text: #1a1a1a;
+  --color-text-2: #5e5e5e;
+  --color-text-3: #8c8c8c;
+  --color-text-inverse: #f4f4f4;
+
+  --color-divider: rgba(26, 26, 26, 0.32);
+  --color-hairline: rgba(26, 26, 26, 0.12);
+  --color-border-input: rgba(26, 26, 26, 0.24);
+  --color-border-input-hover: rgba(26, 26, 26, 0.45);
+
+  --color-accent: var(--color-accent-600);
+  --color-accent-hover: var(--color-accent-700);
+  --color-accent-active: var(--color-accent-800);
+  --color-accent-text: var(--color-accent-700);
+  --color-accent-tint: rgba(79, 140, 255, 0.12);
+  --color-accent-tint-strong: rgba(79, 140, 255, 0.22);
+  --color-on-accent: #ffffff;
+
+  --color-success: var(--color-success-600);
+  --color-success-text: var(--color-success-700);
+  --color-success-tint: color-mix(in srgb, var(--color-success-500) 14%, transparent);
+  --color-warning: var(--color-warning-600);
+  --color-warning-text: var(--color-warning-800);
+  --color-warning-tint: color-mix(in srgb, var(--color-warning-500) 16%, transparent);
+  --color-danger: var(--color-danger-600);
+  --color-danger-text: var(--color-danger-700);
+  --color-danger-tint: color-mix(in srgb, var(--color-danger-500) 12%, transparent);
+  --color-on-status: #ffffff;
+
+  --color-hover: rgba(26, 26, 26, 0.05);
+  --color-pressed: rgba(26, 26, 26, 0.10);
+  --color-selected: var(--color-accent-tint);
+  --color-focus: var(--color-accent-600);
+  --color-selection: rgba(79, 140, 255, 0.3);
+
+  color-scheme: light;
+}

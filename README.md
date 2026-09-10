@@ -1,63 +1,69 @@
 # CoreLab
 
-A Shopify-style **metafields** system for internal company data. Define custom
-fields (with types, namespaces and validation) for any resource, then attach
-values to individual records.
+Office and lab web app for a construction-materials testing / geotechnical firm
+(**Northline Geotechnical**): dispatch, field testing, boring logs, LIMS, report
+review and delivery, timesheets and invoicing.
 
 Live: **https://arashkhajooei.github.io/CoreLab**
 
-## What it does
+Implemented from the Claude Design project `ui_kits/corelab-app/index.html`, ported
+from the design's in-browser Babel setup to a Vite build.
 
-- **Definitions** — the schema. Each definition has a namespace, key, name,
-  type, validation rules, and the resource it applies to. Referenced as
-  `namespace.key` (e.g. `custom.warranty_months`).
-- **Field types** — single-line text (with choices), multi-line text, integer,
-  decimal, money, rating, boolean, date, date-time, URL, color, JSON and
-  references. Every type can be a single value or a **list**.
-- **Records** — instances of a resource (Employee, Product, Order, Project — or
-  your own), each with type-aware editors for its metafield values.
-- **Validation** — min/max, length, choices, regex, currency, required, and more,
-  enforced in the editor.
+## Screens
+
+| Section | Screen | What it does |
+|---|---|---|
+| Operations | Dashboard | KPIs, today's dispatch, alerts, lab queue, reports awaiting review |
+| Operations | Scheduling & dispatch | Technician × day board, unassigned queue, assign/dispatch/unassign |
+| Operations | Field tests | Placement + fresh-concrete entry with live spec pass/fail, cylinders cast |
+| Operations | Boring logs | Depth-scaled strata column, SPT samples, per-stratum editor |
+| Lab | Samples | Sample queue by state; records a break and computes psi from load ÷ area |
+| Lab | Review & deliver | Report queue, paper proof, return or approve-and-deliver |
+| Finance | Timesheets & invoicing | Time entries, selection totals, invoice drafting |
+| Management | Projects | Portfolio list/board, budget burn, project detail |
+| Management | Equipment & certifications | Calibration schedule and staff certification expiry |
+
+## Design system
+
+`src/ds/` is the design project's component library, copied verbatim — 23 components
+(core, forms, data, navigation, feedback) plus the token CSS. Nothing in `src/ds/`
+should be hand-edited; re-sync it from the design project instead.
+
+- Tokens: `src/ds/tokens/{colors,typography,spacing,effects,base}.css`
+- Type: Archivo (heading/body) + JetBrains Mono (numerals, IDs, measurements)
+- Dark theme by default; `data-theme="light"` on `<html>` switches it, and the report
+  proof nests a light-themed subtree inside the dark UI.
+
+**Icons.** `ds/core/Icon.jsx` resolves icons from the global `window.lucide.icons`,
+converting kebab-case to PascalCase. `src/ds/lucide-global.ts` registers only the ~60
+icons this app uses — importing lucide's full set costs ~700 kB. If an icon ever
+renders as a dashed placeholder square, add its PascalCase name to that file.
 
 ## Stack
 
-- React 19 + Vite + TypeScript + Tailwind
-- Supabase (Postgres) via `@supabase/supabase-js`, using the **publishable** key
-- Static SPA deployed to GitHub Pages via GitHub Actions
-
-## Database
-
-The schema lives in [`supabase/migrations/0001_init.sql`](supabase/migrations/0001_init.sql).
-Run it once in the Supabase SQL editor for your project. Tables:
-
-| table | purpose |
-|-------|---------|
-| `owner_types` | the kinds of resources you attach fields to |
-| `records` | individual instances of an owner type |
-| `metafield_definitions` | the custom-field schema |
-| `metafield_values` | a value for a (definition, record) pair |
+React 19 + Vite + TypeScript. Screens and the design system are `.jsx` (kept as-is
+from the design, so `allowJs` is on and they are not type-checked); the entry point is
+TypeScript. Routing is the design's own hash routing, plus a `hashchange` listener so
+back/forward and pasted deep links work. Deployed to GitHub Pages by
+`.github/workflows/deploy.yml` on every push to `main`.
 
 ## Local development
 
 ```bash
 bun install
-cp .env.example .env.local   # fill in your Supabase URL + publishable key
 bun run dev
 ```
 
-## Configuration
+`bun run build` type-checks and builds; `bun run preview` serves the build at
+`/CoreLab/`, the same base path Pages uses.
 
-The frontend needs two env vars (safe to expose — protected by RLS):
+## Data
 
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_PUBLISHABLE_KEY`
+Screens read `src/data/corelab.js` — the design's fixture data — and mutate local
+React state, so dispatching a work order or recording a break updates the UI but does
+not persist. Wiring this to a real backend is the next step.
 
-For the GitHub Pages build they are read from repo **secrets** of the same name.
-The **secret/service key is never used in the frontend.**
-
-## Security note (MVP)
-
-RLS is enabled, and the `anon` role has full CRUD so the app works with no login.
-That means anyone with the site URL can read and write. Before storing real data,
-switch the RLS policies in the migration from `anon` to `authenticated` and add
-Supabase Auth.
+A Supabase project is already provisioned for this repo (`supabase/migrations/`,
+seeded by `scripts/seed.mjs`) from an earlier metafields prototype. Those tables model
+custom field definitions, not lab operations, so they are unused by this app; the
+prototype's UI is in git history at commit `8984e98`.
